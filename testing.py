@@ -20,11 +20,19 @@ while True:
     request = client_connection.recv(1024).decode()
     print(request)
 
-    response_body = """
-    <h1>Hello World From Ayush</h1>
-    """
-    
-    body = response_body.encode('utf-8')
+    clientheaders = request.split('\n')
+
+    filename = clientheaders[0].split()[1]
+
+    if filename == '/':
+        with open('index.html', 'r') as file:
+            content = file.read()
+
+    if filename == '/ayush':
+        with open('ayush.html', 'r') as file:
+            content = file.read()
+
+    body = content.encode('utf-8')
 
     headers = (
         "HTTP/1.1 200 OK\r\n"
