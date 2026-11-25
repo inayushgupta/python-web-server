@@ -52,8 +52,6 @@ def start():
         print('[ACTIVE CONNECTION]:' + str(threading.activeCount() - 1))
 
 
-server.listen()
-
 print("[STARTING]:Server is starting")
 start()
 
