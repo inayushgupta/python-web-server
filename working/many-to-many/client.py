@@ -1,4 +1,5 @@
 import socket
+import sys
 
 SERVER = socket.gethostbyname(socket.gethostname())
 PORT = 7654
@@ -7,7 +8,13 @@ HEADER = 64
 ADDR = (SERVER, PORT) 
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(ADDR)
+try:
+    client.connect(ADDR)
+except ConnectionRefusedError:
+    print("Server refused connection request")
+    print("Possible cause: server not started")
+finally:
+    sys.exit(1)
 
 def send_message(msg):
 
@@ -22,13 +29,19 @@ def send_message(msg):
 
 
 print("CONNECTED TO SERVER\n\n")
-while True:
-    user_input = input("> ")
-    send_message(user_input)
 
-    if user_input == 'dis':
-        break
+try:
+    while True:
+        user_input = input("> ")
+        send_message(user_input)
 
-client.close()
-print('DISCONNECTED')
+        if user_input == 'dis':
+            break
+except KeyboardInterrupt:
+    print("")
+    send_message('dis')
+
+finally:
+    client.close()
+    print('DISCONNECTED')
 

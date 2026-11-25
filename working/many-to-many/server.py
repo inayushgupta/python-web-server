@@ -4,6 +4,10 @@ import threading
 def logger(instance, message):
     print(f"[{instance.upper()}]:[{message}]")
 
+def show_message(addr, message):
+    print(f"[{addr}]:<{message}>")
+
+
 SERVER = socket.gethostbyname(socket.gethostname())
 PORT = 7654
 FORMAT = 'utf-8'
@@ -52,18 +56,25 @@ def runners(conn, addr):
             logger('disconnect', 'client is disconnecting')
             break
         
-        logger('message', data)
-
+        show_message(addr, data)
+    
+    logger('thread', f"exiting <{addr}>")
     conn.close()
 
 def start():
     server.listen()
-    while True:
-        conn, addr = server.accept()
-        newthread = threading.Thread(target=runners, args=(conn, addr))
-        newthread.start()
-        logger('new thread spawned', 'establishing new connection')
-
+    try:
+        while True:
+            conn, addr = server.accept()
+            newthread = threading.Thread(target=runners, args=(conn, addr))
+            newthread.start()
+            logger('new thread', f"thread count = {threading.active_count()-1}")
+            logger('new thread spawned', 'establishing new connection')
+    except KeyboardInterrupt:
+        print("")
+        logger("exiting", 'with keyboard interrupt')
+    finally:
+        server.close()
         
 
 logger('server', 'starting')
